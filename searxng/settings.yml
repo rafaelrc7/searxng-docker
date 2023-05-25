@@ -1,11 +1,89 @@
 # see https://docs.searxng.org/admin/engines/settings.html#use-default-settings
+#
+# Modified by rafaelrc - 23/05/23
+#
+
 use_default_settings: true
+
+general:
+  debug: false
+  instance_name: "SearXNG Brasil"
+  privacypolicy_url: false
+  donation_url: false
+  contact_url: false
+  enable_metrics: true
+
+search:
+  safe_search: 0
+  autocomplete: "duckduckgo"
+  default_lang: "pt-BR"
+  languages:
+    - all
+
 server:
-  # base_url is defined in the SEARXNG_BASE_URL environment variable, see .env and docker-compose.yml
-  secret_key: "ultrasecretkey"  # change this!
-  limiter: true  # can be disabled for a private instance
+  secret_key: "ultrasecretkey"
+  limiter: true
   image_proxy: true
+
 ui:
   static_use_hash: true
+  default_locale: "pt-BR"
+  infinite_scroll: true
+  default_theme: simple
+  theme_args:
+    simple_style: dark
+  results_on_new_tab: true
+
 redis:
   url: redis://redis:6379/0
+
+enabled_plugins:
+  - 'Hash plugin'
+  - 'Search on category select'
+  - 'Self Information'
+  - 'Tracker URL remover'
+  - 'Vim-like hotkeys'
+
+engines:
+  - name: google
+    engine: google
+    shortcut: go
+    disabled: true
+
+  - name: qwant
+    qwant_categ: web
+    engine: qwant
+    shortcut: qw
+    categories: [general, web]
+    disabled: true
+    additional_tests:
+      rosebud: *test_rosebud
+
+  - name: brave
+    shortcut: brave
+    engine: xpath
+    paging: true
+    time_range_support: true
+    first_page_num: 0
+    time_range_url: "&tf={time_range_val}"
+    search_url: https://search.brave.com/search?q={query}&offset={pageno}&spellcheck=1{time_range}
+    url_xpath: //a[@class="result-header"]/@href
+    title_xpath: //span[@class="snippet-title"]
+    content_xpath: //p[1][@class="snippet-description"]
+    suggestion_xpath: //div[@class="text-gray h6"]/a
+    time_range_map:
+      day: 'pd'
+      week: 'pw'
+      month: 'pm'
+      year: 'py'
+    categories: [general, web]
+    disabled: false
+    headers:
+      Accept-Encoding: gzip, deflate
+    about:
+      website: https://brave.com/search/
+      wikidata_id: Q107355971
+      use_official_api: false
+      require_api_key: false
+      results: HTML
+
